@@ -1,0 +1,8 @@
+
+LoadModule access_token_module modules/mod_access_token.so
+
+<Location /protected>
+    AccessTokenCheck On
+    AccessTokenSecret 15cfb576a8bdc1551219fdeb3117ed85
+    AccessTokenAccessKey 7864ffcb01fb5cde1f1c2f37b619fbcd
+</Location>

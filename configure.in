@@ -1,0 +1,17 @@
+
+AC_PREREQ(2.59)
+AC_INIT(mod_access_token, 0.01)
+
+AC_PROG_CC
+AC_HEADER_STDC
+
+AC_ARG_WITH(apxs,
+            AC_HELP_STRING([--with-apxs=FILE], [location of the apxs program]),
+            [ APXS="$withval"], [ APXS=no ])
+
+if test "$APXS" = no; then
+    AC_PATH_PROG(APXS, apxs, no,
+                /usr/local/apache2/bin:/sbin:/usr/sbin:/usr/local/sbin:/bin:/usr/bin:/usr/local/bin)
+fi
+
+AC_OUTPUT(Makefile)

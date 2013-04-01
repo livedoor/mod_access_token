@@ -1,0 +1,62 @@
+
+mod_access_token - Secure downloading module for Apache2
+=============================================================
+
+mod_access_token provides access token based secure downloading.
+
+Your web application generates a download URI with signed query_string parameters.
+mod_access_token will check signature, and limit the request by specifying an expiration time.
+
+Usage
+-----
+
+http://example.com/protected/example.jpg?AccessKey=<AccessKey>&Expires=<Expires>&Signature=<Signature>
+
+* AccessKey: pre-defined AccessKey. 
+*   Expires: Expiration time. specified the number of seconds since the UNIX epoch.
+* Signature: Base64 encoded HMAC-SHA1
+
+Pseudo-Code
+-----------
+
+    PlainText = <HTTP_METHOD> + <URI> + <EXPIRES> + <ACCESS_KEY>
+    Signature = Base64(HMAC_SHA1(PlainText, Secret))
+
+Example (Perl)
+--------------
+
+    use strict;
+    use URI;
+    use Digest::HMAC_SHA1;
+    
+    my $access_key = 'XXX';
+    my $exp = time + 300; # 5minutes
+    my $url = 'http://example.com/protected/example.jpg';
+    my $uri = URI->new( $url );
+    my $plain = sprintf '%s%s%s%s', 'GET', $uri->path, $exp, $access_key;
+    my $hmac = Digest::HMAC_SHA1->new( $secret );
+    $hmac->add( $plain );
+    my $sig = $hmac->b64digest;
+    $uri->query_form({
+        Signature => $sig,
+        AccessKey => $access_key,
+        Expires => $exp,
+    });
+    printf "%s\n", $uri->as_string;
+
+
+Directives
+----------
+
+AccessTokenCheck On/Off
+    Whether or not to use this module.
+
+AccessTokenSecret <secret>
+    Shared secret string.
+
+AccessTokenAccessKey <access_key>
+    public AccessKey string.
+
+
+
+

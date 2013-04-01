@@ -1,0 +1,27 @@
+
+APXS=@APXS@
+PACKAGE = @PACKAGE_NAME@
+VERSION = @PACKAGE_VERSION@
+PACKAGEDIR = $(PACKAGE)-$(VERSION)
+PACKAGETGZ = $(PACKAGE)-$(VERSION).tar.gz
+
+all: 
+	$(APXS) -c $(INCLUDES) $(LIBS) $(PACKAGE).c 
+
+install: 
+	$(APXS) -ia $(PACKAGE).la
+
+#   cleanup
+clean:
+	rm -rf *.o *.a *.so *.lo *.la *.slo a.out .libs \
+
+distclean: clean
+	rm -rf Makefile config.cache config.log config.status autom4te.cache $(PACKAGETGZ) $(PACKAGEDIR)
+
+dist:
+	mkdir $(PACKAGEDIR)
+	autoconf
+	cp $(PACKAGE).c configure configure.in Makefile.in README $(PACKAGEDIR)
+	tar cvzf $(PACKAGETGZ) $(PACKAGEDIR)
+	rm -rf $(PACKAGEDIR)
+
