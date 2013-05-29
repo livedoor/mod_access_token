@@ -1,9 +1,11 @@
 
 #include "httpd.h"
+#include "http_request.h"
 #include "http_config.h"
 #include "http_protocol.h"
 #include "http_log.h"
 #include "ap_config.h"
+#include "apr_base64.h"
 #include "apr_sha1.h"
 #include "apr_strings.h"
 #include "apr_lib.h"
@@ -108,7 +110,11 @@ static apr_status_t access_token_parse_args( request_rec *r, apr_table_t *params
     while(*args && (val = ap_getword(r->pool, &args, '&'))) {
         char *name = ap_getword_nc(r->pool, &val, '=');
         if(name != NULL && val != NULL) {
+#if (AP_SERVER_MINORVERSION_NUMBER > 2)
+            if(ap_unescape_url_keep2f(val, 1) == OK)
+#else
             if(ap_unescape_url_keep2f(val) == OK)
+#endif
                 apr_table_set(params, name, val);
         }
     }
